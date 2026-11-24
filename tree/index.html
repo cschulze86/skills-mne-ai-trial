@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Decision helper: monitoring a national skills policy</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1f2a33;--soft:#5b6770;--line:#d9d4c8;--accent:#1e5a7a;--accent-ink:#fff;--good:#e7f1ea;--good-line:#7fb08c;--warn:#fbf1dc;--warn-line:#d7a84a}
+@media (prefers-color-scheme:dark){:root{--bg:#14191d;--card:#1d252b;--ink:#e9edf0;--soft:#a3afb8;--line:#33404a;--accent:#7fc0e3;--accent-ink:#0f1a21;--good:#1c2f24;--good-line:#4d8a5f;--warn:#33290f;--warn-line:#a37a22}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:46rem;margin:0 auto;padding:1.5rem 1rem 4rem}
+h1{font-size:1.6rem;line-height:1.25;margin:.5rem 0 .25rem}
+h2{font-size:1.3rem;line-height:1.3;margin:0 0 .75rem}
+h3{font-size:1.05rem;margin:1.25rem 0 .35rem}
+p{margin:.5rem 0}
+.lead{color:var(--soft);margin-bottom:1.25rem}
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+.tab{flex:1 1 14rem;text-align:left;padding:.8rem 1rem;border:2px solid var(--line);border-radius:.6rem;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+.tab[aria-selected="true"]{border-color:var(--accent)}
+.tab strong{display:block}
+.tab span{color:var(--soft);font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:1.25rem 1.25rem 1.5rem}
+.step{color:var(--soft);font-size:.9rem;margin-bottom:.4rem}
+.help{background:var(--bg);border-left:4px solid var(--line);padding:.6rem .8rem;margin:.75rem 0 1rem;font-size:.95rem}
+.opts{display:grid;gap:.6rem;margin-top:1rem}
+.opt{text-align:left;padding:.85rem 1rem;border:2px solid var(--accent);border-radius:.6rem;background:transparent;color:var(--ink);font:inherit;cursor:pointer}
+.opt:hover,.opt:focus-visible{background:var(--accent);color:var(--accent-ink);outline:none}
+.nav{display:flex;gap:1rem;margin-top:1.25rem;flex-wrap:wrap}
+.link{background:none;border:0;padding:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer}
+.result{background:var(--good);border:1px solid var(--good-line);border-radius:.6rem;padding:1rem 1.1rem;margin:.5rem 0 1rem}
+.todo{background:var(--warn);border:1px solid var(--warn-line);border-radius:.6rem;padding:.8rem 1.1rem;margin:1rem 0}
+ul{padding-left:1.2rem;margin:.4rem 0}
+li{margin:.3rem 0}
+.trail{margin-top:1.5rem;font-size:.9rem;color:var(--soft)}
+.trail li{margin:.15rem 0}
+.read{font-size:.95rem;color:var(--soft)}
+footer{margin-top:2rem;font-size:.85rem;color:var(--soft)}
+@media print{.tabs,.nav,.opts{display:none}body{background:#fff}.card{border:0;padding:0}}
+</style>
+</head>
+<body>
+<main>
+<h1>Decision helper</h1>
+<p class="lead">For teams building a framework to monitor and evaluate a national skills policy. Answer a few plain questions and see where to start and what to read. Nothing you click is saved or sent anywhere.</p>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tab-route" aria-selected="true"><strong>1. Where do we start?</strong><span>About six questions. Tells you how much to build first.</span></button>
+  <button class="tab" role="tab" id="tab-ind" aria-selected="false"><strong>2. Should this indicator go in?</strong><span>Test one indicator at a time. Use it as often as you like.</span></button>
+</div>
+
+<section class="card" id="app" aria-live="polite"></section>
+
+<footer>Trial version. Section numbers refer to the draft guide on monitoring and evaluation of national skills policies. This page gives a starting point; the decisions belong to the government, the employers' organizations and the workers' organizations together.</footer>
+</main>
+
+<script>
+"use strict";
+/* ---------- Tree 1: where do we start ---------- */
+const ROUTE = {
+  first: "have",
+  nodes: {
+    have: { q: "Do you already have a framework for monitoring your skills policy?",
+      help: "A framework is a short table of indicators, each with a source, a responsible institution and, for most, a target.",
+      opts: [["No, we are starting now", "mandate"], ["We have a draft that is not yet adopted", "R_draft"], ["Yes, it is adopted and in use", "R_use"]] },
+    mandate: { q: "Has someone asked for the framework, and is there a body that will read it and act on it?",
+      help: "For example a national skills council or a tripartite committee that meets at least once a year.",
+      opts: [["Yes", "table"], ["No, or not sure", "table", "Agree who will read the framework and when. A framework that nobody reads is not used (sections 2.2 and 10.1)."]] },
+    table: { q: "Are employers' organizations and workers' organizations taking part, each with a named contact person?",
+      help: "The framework is built by government, employers and workers together. An indicator chosen by one of them alone is rarely used by the other two.",
+      opts: [["Yes, both", "policy"], ["Only one of them", "policy", "Invite the missing partner before you read the policy together (section 4)."], ["Not yet", "policy", "Invite employers' and workers' organizations before you read the policy together, and ask each to name a contact person (section 4)."]] },
+    policy: { q: "Is the policy clear about what it will do and what should change?",
+      help: "A quick test: could government, employers and workers agree, in one meeting, a list of what the policy commits to and a list of the changes it expects?",
+      opts: [["Yes", "data", null, {policy: true}], ["No", "data", null, {policy: false}], ["Not sure", "data", "You were not sure whether the policy is clear. Read it together first (section 7, stage 1). If the two lists come easily, you can build more than this page suggests.", {policy: false}]] },
+    data: { q: "Can at least half of the indicators you have in mind be collected from sources that exist today?",
+      help: "A source that exists today is a register, a survey or a report that an institution already produces. If you have no indicators in mind yet, choose “Not sure”.",
+      opts: [["Yes", "capacity", null, {data: true}], ["No", "capacity", null, {data: false}], ["Not sure", "capacity", "You were not sure about your data. List the sources your institutions produce today before you choose indicators (Annex 5).", {data: false}]] },
+    capacity: { q: "Is there enough time to collect at least six indicators every year?",
+      help: "Add up the working days each indicator would take in a year. Compare the total with the days your team and its partners can give.",
+      opts: [["Yes", "R_route", null, {capacity: true}], ["No", "R_route", null, {capacity: false}], ["Not sure", "R_route", "You were not sure about the time available. Count the people and the days each can give in a year, and treat the answer as rough.", {capacity: false}]] }
+  },
+  results: {
+    R_draft: { title: "Check the draft together before you adopt it",
+      body: ["Review the draft with all three partners against six checks. Is it <strong>concise</strong> (6 to 10 indicators, and the work fits the time you have)? <strong>Complete</strong> (every principle covered)? <strong>Sound</strong> (every indicator well built)? <strong>Assigned</strong> (an institution has accepted each one)? <strong>Shared</strong> (each partner helped shape it)? <strong>Honest</strong> (no claim that the policy alone caused a change, and gaps recorded as gaps)?",
+        "Each check that fails sends you back to one stage of the method. Then try the framework for one or two rounds before it is adopted."],
+      read: "Section 7, stage 5; section 11; Annex 2 (the Checklist sheet of the workbook)." },
+    R_use: { title: "Use it: read the indicators together, decide, and write the decision down",
+      body: ["Hold a review meeting at least once a year. Read all the indicator values together, against their targets and dates. Check the assumptions you doubted. Hear any outside evidence. Record what was decided, by whom and by when.",
+        "Plan the evaluations in advance: at the start of the policy, at mid-term and at the end."],
+      read: "Sections 10.1, 6.2 and 9." }
+  }
+};
+function routeResult(a) {
+  const weak = [];
+  if (a.policy === false) weak.push("policy");
+  if (a.data === false) weak.push("data");
+  if (a.capacity === false) weak.push("capacity");
+  if (weak.length === 0) return { title: "Build the full framework",
+    body: ["Aim for six to ten indicators, each with a baseline and a target, agreed by all three partners.",
+      "Follow the five stages in order: read the policy; gather and filter candidate indicators; specify each one; set targets and check the effort; review and adopt."],
+    read: "Section 7, stages 1 to 5; section 11 for the trial rounds; Annex 5 for the method on two pages." };
+  if (weak.length === 3) return { title: "Start with the minimum framework",
+    body: ["A small framework that is used is worth more than a full one that is not. Start with four things:",
+      "<ul><li>two lists agreed by all three partners: what the policy commits to, and what it wants to change;</li><li>six indicators, one for each of the six principles, each with a national source and a responsible institution;</li><li>one review meeting a year;</li><li>a written record of what that meeting decided.</li></ul>",
+      "Use indicators that run on documents and administrative records, and ratings agreed in a meeting. Add more as data and capacity grow."],
+    read: "Section 7, “Where to start” and “The minimum core”; Annex 5." };
+  const rows = {
+    policy: "<li><strong>The policy is not yet clear.</strong> Make reading the policy your main piece of work: agree with all three partners what it commits to and what it wants to change. Monitor the commitments that are clear. <em>Add later:</em> indicators of change in the system, with targets, once the intended changes are agreed and a baseline exists.</li>",
+    data: "<li><strong>Data are thin.</strong> Choose indicators that can be produced from documents and administrative records, and ratings agreed in a meeting. In the indicator bank, the column “Data needed” shows which entries these are. <em>Add later:</em> indicators from national surveys, more breakdowns, and one or two improvements to your sources each cycle.</li>",
+    capacity: "<li><strong>Time is short.</strong> Start with the six-indicator starting set and one review meeting a year. <em>Add later:</em> up to ten indicators, a second meeting each year, and the mid-term and final evaluations.</li>"
+  };
+  return { title: "Start smaller where you are weak, and build up",
+    body: ["You do not have to build everything at the first attempt. Follow the five stages, with these adjustments:", "<ul>" + weak.map(w => rows[w]).join("") + "</ul>"],
+    read: "Section 7, “Where to start” (table 7.2); section 8.3 for thin data." };
+}
+
+/* ---------- Tree 2: should this indicator go in ---------- */
+const IND = {
+  first: "i1",
+  nodes: {
+    i1: { q: "Does the indicator point to something your policy says it will do, or a change it wants to see?",
+      help: "Every indicator must point back to the policy. Example: if the policy promises a skills fund, “share of the fund paid out” points to it.",
+      opts: [["Yes", "i2"], ["No", "i1b"]] },
+    i1b: { q: "Is it a national statistic that describes the setting, such as youth unemployment or economic growth?",
+      opts: [["Yes", "R_context"], ["No", "R_drop"]] },
+    i2: { q: "Does it tell you about the policy or the whole skills system, and not only about one programme or project?",
+      help: "A test: if that one programme closed tomorrow, would the indicator still make sense? “People trained by the youth project” would not. “Share of providers meeting national quality standards” would.",
+      opts: [["Yes", "i3"], ["No, it is about one programme", "R_programme"]] },
+    i3: { q: "Does it measure one thing only?",
+      help: "A test: could its parts move in different directions? “Quality and relevance of training” can, because quality may rise while relevance falls. That is two indicators.",
+      opts: [["Yes, one thing", "i4"], ["No, more than one", "R_split"]] },
+    i4: { q: "Is it defined so precisely that two people would count it the same way?",
+      help: "A definition says exactly what is counted, how the figure is calculated, and which classification is used.",
+      opts: [["Yes", "i5"], ["Not yet", "R_define"]] },
+    i5: { q: "Is there a named source that exists today and can give you the figure?",
+      help: "Name the register, survey or report, and the office that holds it.",
+      opts: [["Yes", "i6"], ["No", "i5b"]] },
+    i5b: { q: "Is it something that cannot be counted, such as how well a council works or the quality of dialogue?",
+      opts: [["Yes", "R_rating"], ["No, it could be counted but nobody collects it", "R_proxy"]] },
+    i6: { q: "Does it cover a principle that has no indicator yet, or something the partners see as a priority?",
+      help: "The six principles: equity and inclusion; relevance; effectiveness and innovation; efficiency and accountability; sustainability and future-readiness; coherence.",
+      opts: [["Yes", "i7"], ["No, that is already covered", "R_reserve"]] },
+    i7: { q: "Can the team afford to collect it every time, on top of everything else in the framework?",
+      help: "Compare the working days it needs in a year with the days you have left.",
+      opts: [["Yes", "R_keep"], ["No", "R_trim"]] }
+  },
+  results: {
+    R_keep: { title: "Keep it", body: ["It passes every test. Next, describe it in full: definition, source, breakdowns, how often, and who is responsible. Then set its baseline and target with all three partners."], read: "Section 7, stages 3 and 4." },
+    R_context: { title: "Keep it as a context indicator, with no target", body: ["It describes the setting the policy works in. Keep two or three of these and read them at every review meeting. Set no target, because the framework cannot show that the policy moved it."], read: "Section 2.1." },
+    R_drop: { title: "Leave it out", body: ["It may be useful somewhere else, but it does not monitor this policy. Start from what the policy needs to know, not from the data that happen to exist."], read: "Section 5.1." },
+    R_programme: { title: "Leave it out of the framework, and use it as evidence", body: ["It measures one programme, not the policy. Bring programme results to the review meeting as evidence instead. If the scheme is itself a commitment of the policy, ask a different question: is that commitment being delivered?"], read: "Sections 5.2 and 8.2." },
+    R_split: { title: "Split it, then test each part again", body: ["Write one indicator for each thing it measures, and run each through these questions."], read: "Section 5.3." },
+    R_define: { title: "Write the definition first, then come back", body: ["Say exactly what is counted, how it is calculated, and which classification is used. Then test it again."], read: "Section 5.3." },
+    R_rating: { title: "Make it a rating", body: ["Some things cannot be counted. A rating is a structured judgement, agreed in a meeting with all three partners against a written scale, and recorded in words such as Emerging, Developing, Established or Advanced. It needs a meeting, not a data system."], read: "Sections 5.1 and 5.3." },
+    R_proxy: { title: "Use the nearest figure you can collect, or wait", body: ["If the indicator matters, use the closest figure that an existing source can give, call it a proxy, and plan how the source will improve. If nothing comes close, record the gap and keep the indicator for later."], read: "Section 8.3." },
+    R_reserve: { title: "Put it on the reserve list", body: ["It is a sound indicator, but the framework may not need it. Add it only if the work still fits the time you have."], read: "Section 7, stage 4." },
+    R_trim: { title: "Something has to give", body: ["Look at the other indicators that serve the same principle. Keep the one that tells you the most for the least work. The partners decide which."], read: "Section 7, stage 4." }
+  }
+};
+
+/* ---------- Engine ---------- */
+const app = document.getElementById("app");
+const tabs = { route: document.getElementById("tab-route"), ind: document.getElementById("tab-ind") };
+let tree, mode, hist, todos, answers, trail;
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function start(m){
+  mode = m; tree = m === "route" ? ROUTE : IND; hist = [tree.first]; todos = []; answers = {}; trail = [];
+  tabs.route.setAttribute("aria-selected", m === "route"); tabs.ind.setAttribute("aria-selected", m === "ind");
+  render();
+}
+function choose(i){
+  const id = hist[hist.length-1], node = tree.nodes[id], o = node.opts[i];
+  trail.push({q: node.q, a: o[0], todo: o[2] || null, set: o[3] || null});
+  hist.push(o[1]); render();
+}
+function back(){ if (hist.length > 1){ hist.pop(); trail.pop(); render(); } }
+function state(){ todos = trail.filter(t=>t.todo).map(t=>t.todo); answers = Object.assign({}, ...trail.map(t=>t.set||{})); }
+function render(){
+  state();
+  const id = hist[hist.length-1];
+  let h = "";
+  if (tree.nodes[id]) {
+    const n = tree.nodes[id];
+    h += '<div class="step">Question ' + hist.length + '</div><h2>' + esc(n.q) + '</h2>';
+    if (n.help) h += '<div class="help">' + esc(n.help) + '</div>';
+    h += '<div class="opts">' + n.opts.map((o,i)=>'<button class="opt" data-i="'+i+'">'+esc(o[0])+'</button>').join("") + '</div>';
+  } else {
+    const r = id === "R_route" ? routeResult(answers) : tree.results[id];
+    h += '<div class="step">Your result</div><div class="result"><h2>' + esc(r.title) + '</h2>' + r.body.map(b => b.startsWith("<ul>") ? b : "<p>" + b + "</p>").join("") + '</div>';
+    if (todos.length) h += '<div class="todo"><strong>Settle these first</strong><ul>' + todos.map(t=>"<li>"+esc(t)+"</li>").join("") + '</ul></div>';
+    h += '<p class="read"><strong>Read in the guide:</strong> ' + esc(r.read) + '</p>';
+  }
+  h += '<div class="nav">';
+  if (hist.length > 1) h += '<button class="link" id="back">Back one question</button>';
+  if (hist.length > 1) h += '<button class="link" id="restart">' + (mode === "ind" && !tree.nodes[id] ? "Test another indicator" : "Start again") + '</button>';
+  if (!tree.nodes[id]) h += '<button class="link" id="print">Print this page</button>';
+  if (!tree.nodes[id] && mode === "route") h += '<button class="link" id="other">Next: test your indicators</button>';
+  h += '</div>';
+  if (trail.length) h += '<div class="trail"><strong>Your answers so far</strong><ul>' + trail.map(t=>"<li>"+esc(t.q)+" <strong>"+esc(t.a)+"</strong></li>").join("") + '</ul></div>';
+  app.innerHTML = h;
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => choose(+b.dataset.i));
+  const g = x => document.getElementById(x);
+  if (g("back")) g("back").onclick = back;
+  if (g("restart")) g("restart").onclick = () => start(mode);
+  if (g("print")) g("print").onclick = () => window.print();
+  if (g("other")) g("other").onclick = () => start("ind");
+  const first = app.querySelector("h2"); if (first) { first.setAttribute("tabindex","-1"); }
+}
+tabs.route.onclick = () => start("route");
+tabs.ind.onclick = () => start("ind");
+start("route");
+</script>
+</body>
+</html>
