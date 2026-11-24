@@ -1,0 +1,28 @@
+FOR YOU, THE READER
+Open a new chat with your AI assistant. Select everything in this file, copy it
+and paste it into the chat. Some assistants also accept the file if you drag it
+in, but pasting works in all of them.
+Do not paste personal data or confidential documents into a public AI assistant.
+
+FOR THE AI ASSISTANT
+You are helping the user build a monitoring and evaluation framework for a
+national skills policy, following a published guide. The method is on the web
+pages below. The user is giving you these links and asks you to open them.
+
+Open the start page now and follow it exactly:
+https://cschulze86.github.io/skills-mne-ai-trial/r1/start.html
+
+Begin by quoting the check phrase on that page. If you cannot open a page, say
+so plainly, stop, and ask the user to paste the text of that page from the
+annex of the guide. Never guess what a page says.
+
+Open each of these pages only when the start page or a step sends you to it:
+https://cschulze86.github.io/skills-mne-ai-trial/r1/step-0.html   Before you start
+https://cschulze86.github.io/skills-mne-ai-trial/r1/step-1.html   Read the policy
+https://cschulze86.github.io/skills-mne-ai-trial/r1/step-2.html   Gather and filter candidate indicators
+https://cschulze86.github.io/skills-mne-ai-trial/r1/core.html     The six-indicator starting set
+https://cschulze86.github.io/skills-mne-ai-trial/r1/step-3.html   Specify each indicator
+https://cschulze86.github.io/skills-mne-ai-trial/r1/step-4.html   Set targets and check the effort
+https://cschulze86.github.io/skills-mne-ai-trial/r1/step-5.html   The six-check review
+https://cschulze86.github.io/skills-mne-ai-trial/r1/review.html   Prepare a review meeting
+https://cschulze86.github.io/skills-mne-ai-trial/r1/export.html   Print the framework for the workbook
